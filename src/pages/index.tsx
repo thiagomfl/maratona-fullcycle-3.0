@@ -1,17 +1,24 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { Typography } from '@material-ui/core'
+import {
+  Card,
+  Button,
+  CardMedia,
+  Typography,
+  CardContent,
+  CardActions,
+} from '@material-ui/core'
 
 import { Product } from '../models/Product'
 import styles from '../styles/Home.module.css'
 
 const products: Product[] = [{
   id: 'uuid',
-  name: 'Produto Teste',
-  description: 'Lorem Ipsum',
   price: 99.99,
-  image_url: 'https://source.unsplash.com/random?product',
+  name: 'Produto Teste',
   slug: 'produto-teste',
+  description: 'Lorem Ipsum',
+  image_url: 'https://source.unsplash.com/random?product',
   created_at: '2021-07-08T22:55:00'
 }]
 
@@ -31,6 +38,29 @@ export default function Home() {
       >
         Produtos
       </Typography>
+      {products.map(product => (
+        <Card key={product.id}>
+          <CardMedia image={product.image_url} />
+          <CardContent>
+            <Typography 
+              component="h2"
+              variant="h5"
+              gutterbottom="true"
+            >
+              {product.name}
+            </Typography>
+            <CardActions>
+              <Button 
+                size="small"
+                component="a"
+                color="primary"
+              >
+                Detalhes
+              </Button>
+            </CardActions>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }
