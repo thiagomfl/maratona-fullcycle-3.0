@@ -1,7 +1,10 @@
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import Image from 'next/image'
 import {
   Card,
+  Grid,
   Button,
   CardMedia,
   Typography,
@@ -9,20 +12,15 @@ import {
   CardActions,
 } from '@material-ui/core'
 
+import http from '../http'
 import { Product } from '../models/Product'
 import styles from '../styles/Home.module.css'
 
-const products: Product[] = [{
-  id: 'uuid',
-  price: 99.99,
-  name: 'Produto Teste',
-  slug: 'produto-teste',
-  description: 'Lorem Ipsum',
-  image_url: 'https://source.unsplash.com/random?product',
-  created_at: '2021-07-08T22:55:00'
-}]
+type Props = {
+  products: Product[]
+}
 
-export default function Home() {
+const ProductListPage = ({ products }: Props) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -38,29 +36,57 @@ export default function Home() {
       >
         Produtos
       </Typography>
-      {products.map(product => (
-        <Card key={product.id}>
-          <CardMedia image={product.image_url} />
-          <CardContent>
-            <Typography 
-              component="h2"
-              variant="h5"
-              gutterbottom="true"
-            >
-              {product.name}
-            </Typography>
-            <CardActions>
-              <Button 
-                size="small"
-                component="a"
-                color="primary"
-              >
-                Detalhes
-              </Button>
-            </CardActions>
-          </CardContent>
-        </Card>
-      ))}
+      <Grid container spacing={4}>
+        {products.map(product => (
+          <Grid 
+            key={product.id}
+            item
+            xs={12}
+            md={4}
+          >
+            <Card>
+              <CardMedia
+                image={product.image_url}
+                style={{ paddingTop: "56%" }}
+              />
+              <CardContent>
+                <Typography 
+                  component="h2"
+                  variant="h5"
+                  gutterbottom="true"
+                >
+                  {product.name}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Link 
+                  href="/produtos/[slug]"
+                  as={`/produtos/${product.slug}`}
+                  passHref
+                >
+                  <Button 
+                    size="small"
+                    component="a"
+                    color="primary"
+                  >
+                    Detalhes
+                  </Button>
+                </Link>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     </div>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { data: products } = await http.get('products')
+  
+  return {
+    props: { products }
+  }
+}
+
+export default ProductListPage
