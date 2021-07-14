@@ -12,9 +12,10 @@ import {
   CardContent,
   CardActions,
 } from '@material-ui/core'
+import axios from 'axios'
 
-import { Product } from '../../models/Product'
-import styles from '../../styles/Home.module.css'
+import { Product } from '../../../models/Product'
+import styles from '../../../styles/Home.module.css'
 
 type Props = {
   product: Product

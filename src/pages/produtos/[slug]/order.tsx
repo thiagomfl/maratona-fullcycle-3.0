@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import { useForm } from 'react-hook-form'
 import {
   Box,
   Grid,
@@ -13,6 +14,7 @@ import {
 } from '@material-ui/core'
 
 import { Product } from '../../models/Product'
+import { CreditCard } from '../../models/CreditCard'
 import styles from '../../styles/Home.module.css'
 
 type Props = {
@@ -20,6 +22,16 @@ type Props = {
 }
 
 const ProductDetailPage = ({ product }: Props) => {
+  const { register, handleSubmit, setValue } = useForm()
+
+  const onSubmit = async (data: CreditCard) => {
+    const { data: order } = await http.post('orders', {
+      credit_card: data,
+      items: [{ product_id: product.id, quantity: 1 }]
+    })
+
+    console.log(order)
+  }
 
   return (
     <div className={styles.container}>
@@ -52,15 +64,21 @@ const ProductDetailPage = ({ product }: Props) => {
       >
         Pague com cartão de crédito
       </Typography>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <TextField required label="Nome" fullWidth />
+            <TextField 
+              required
+              fullWidth
+              label="Nome"
+              {...register('name')}
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <TextField
               required
               fullWidth
+              {...register('number')}
               label="Número do cartão"
               inputProps={{ maxLength: 16 }}
             />
@@ -71,6 +89,7 @@ const ProductDetailPage = ({ product }: Props) => {
               fullWidth
               label="CVV"
               type="number"
+              {...register('cvv')}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -81,6 +100,8 @@ const ProductDetailPage = ({ product }: Props) => {
                  fullWidth
                  type="number"
                  label="Expiração mês"
+                 onChange={e => setValue('expiration_month', Number(e.target.value))}
+                 {...register('expiration_month')}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -89,6 +110,8 @@ const ProductDetailPage = ({ product }: Props) => {
                   fullWidth
                   type="number"
                   label="Expiração ano"
+                  onChange={e => setValue('expiration_year', Number(e.target.value))}
+                 {...register('expiration_year')}
                 />
               </Grid>
             </Grid>
